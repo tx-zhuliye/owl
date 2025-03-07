@@ -34,6 +34,7 @@ from .togetherai_config import TOGETHERAI_API_PARAMS, TogetherAIConfig
 from .vllm_config import VLLM_API_PARAMS, VLLMConfig
 from .yi_config import YI_API_PARAMS, YiConfig
 from .zhipuai_config import ZHIPUAI_API_PARAMS, ZhipuAIConfig
+from .config_factory import create_config
 
 __all__ = [
     'BaseConfig',

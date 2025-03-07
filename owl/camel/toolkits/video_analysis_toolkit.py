@@ -125,10 +125,15 @@ class VideoAnalysisToolkit(BaseToolkit):
 
         logger.info(f"Video will be downloaded to {self._download_directory}")
 
+        # 为Qwen-Omni模型添加必要的参数
+        config = {"temperature": 0.2}
+        if ModelType.QWEN_OMNI_TURBO == "qwen-omni-turbo":
+            config["stream"] = False
+
         self.vl_model = ModelFactory.create(
             model_platform=ModelPlatformType.QWEN,
-            model_type=ModelType.QWEN_VL_MAX,
-            model_config_dict=QwenConfig(temperature=0.2).as_dict(),
+            model_type=ModelType.QWEN_OMNI_TURBO,
+            model_config_dict=QwenConfig(**config).as_dict(),
         )
 
         self.vl_agent = ChatAgent(
@@ -246,6 +251,12 @@ class VideoAnalysisToolkit(BaseToolkit):
 
         print(prompt)
 
+        # 特殊处理：检查是否使用的是通义千问Omni模型
+        if self.vl_model.model_type == ModelType.QWEN_OMNI_TURBO:
+            logger.info("Using Qwen-Omni-Turbo model for video analysis")
+            # 这里可能需要特殊处理，取决于通义千问Omni的API实现
+            # 但是我们仍然可以使用现有的架构，因为图像处理是在BaseMessage的to_openai_user_message方法中完成的
+        
         msg = BaseMessage.make_user_message(
             role_name="User",
             content=prompt,

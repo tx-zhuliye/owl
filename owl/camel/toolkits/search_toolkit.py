@@ -699,9 +699,9 @@ class SearchToolkit(BaseToolkit):
         """
 
         model = ModelFactory.create(
-            model_type=ModelType.GPT_4O_MINI,
-            model_platform=ModelPlatformType.OPENAI,
-            model_config_dict={"temperature": 0, "top_p": 1}
+            model_type=ModelType.QWEN_TURBO,
+            model_platform=ModelPlatformType.QWEN,
+            model_config_dict={"temperature": 0.3, "top_p": 0.9}
         )
 
         search_agent = ChatAgent(

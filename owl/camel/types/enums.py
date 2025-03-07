@@ -144,6 +144,7 @@ class ModelType(UnifiedModelType, Enum):
     QWEN_MATH_PLUS = "qwen-math-plus"
     QWEN_MATH_TURBO = "qwen-math-turbo"
     QWEN_CODER_TURBO = "qwen-coder-turbo"
+    QWEN_OMNI_TURBO = "qwen-omni-turbo"
     QWEN_2_5_CODER_32B = "qwen2.5-coder-32b-instruct"
     QWEN_2_5_72B = "qwen2.5-72b-instruct"
     QWEN_2_5_32B = "qwen2.5-32b-instruct"
@@ -399,6 +400,7 @@ class ModelType(UnifiedModelType, Enum):
             ModelType.QWEN_MATH_PLUS,
             ModelType.QWEN_MATH_TURBO,
             ModelType.QWEN_CODER_TURBO,
+            ModelType.QWEN_OMNI_TURBO,
             ModelType.QWEN_2_5_CODER_32B,
             ModelType.QWEN_2_5_72B,
             ModelType.QWEN_2_5_32B,
@@ -553,6 +555,7 @@ class ModelType(UnifiedModelType, Enum):
             ModelType.QWEN_PLUS,
             ModelType.QWEN_TURBO,
             ModelType.QWEN_CODER_TURBO,
+            ModelType.QWEN_OMNI_TURBO,
             ModelType.TOGETHER_LLAMA_3_1_8B,
             ModelType.TOGETHER_LLAMA_3_1_70B,
             ModelType.TOGETHER_LLAMA_3_1_405B,

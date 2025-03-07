@@ -1,7 +1,7 @@
 from camel.models import ModelFactory
 from camel.toolkits import *
 from camel.types import ModelPlatformType, ModelType
-from camel.configs import ChatGPTConfig
+from camel.configs import QwenConfig
 
 from typing import List, Dict
 from dotenv import load_dotenv
@@ -22,15 +22,15 @@ def construct_society(question: str) -> OwlRolePlaying:
     assistant_role_name = "assistant"
     
     user_model = ModelFactory.create(
-        model_platform=ModelPlatformType.OPENAI,
-        model_type=ModelType.GPT_4O,
-        model_config_dict=ChatGPTConfig(temperature=0, top_p=1).as_dict(), # [Optional] the config for model
+        model_platform=ModelPlatformType.QWEN,
+        model_type=ModelType.QWEN_PLUS,
+        model_config_dict=QwenConfig(temperature=0.3, top_p=0.9).as_dict(),
     )
 
     assistant_model = ModelFactory.create(
-        model_platform=ModelPlatformType.OPENAI,
-        model_type=ModelType.GPT_4O,
-        model_config_dict=ChatGPTConfig(temperature=0, top_p=1).as_dict(), # [Optional] the config for model
+        model_platform=ModelPlatformType.QWEN,
+        model_type=ModelType.QWEN_PLUS,
+        model_config_dict=QwenConfig(temperature=0.3, top_p=0.9).as_dict(),
     )
  
     
@@ -74,7 +74,7 @@ def construct_society(question: str) -> OwlRolePlaying:
 
 
 # Example case
-question = "What was the volume in m^3 of the fish bag that was calculated in the University of Leicester paper `Can Hiccup Supply Enough Fish to Maintain a Dragon’s Diet?` "
+question = "我需要创建一个AI日程管理助手的微信小程序，请你作为产品经理规划工作流程和分工，制定相关的开发计划和内容。然后，你作为UI设计师，设计小程序的UI界面。最后，你作为开发工程师，编写代码实现小程序的功能。"
 
 society = construct_society(question)
 answer, chat_history, token_count = run_society(society)

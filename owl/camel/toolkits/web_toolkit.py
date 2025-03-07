@@ -717,7 +717,7 @@ class WebToolkit(BaseToolkit):
                  headless=True,
                  cache_dir: Optional[str] = None,
                  page_script_path: Optional[str] = None,
-                 model: Literal['gpt-4o', 'gpt-4o-mini'] = 'gpt-4o',
+                 model: Literal['gpt-4o', 'gpt-4o-mini', 'qwen-plus', 'qwen-turbo'] = 'qwen-plus',
                  history_window: int = 5
                  ): 
         
@@ -741,26 +741,27 @@ class WebToolkit(BaseToolkit):
         os.makedirs(self.browser.cache_dir, exist_ok=True)
     
     
-    def _initialize_agent(self, model: Literal['gpt-4o', 'gpt-4o-mini']) -> Tuple[ChatAgent, ChatAgent]:
+    def _initialize_agent(self, model: Literal['gpt-4o', 'gpt-4o-mini', 'qwen-plus', 'qwen-turbo'] = 'qwen-plus') -> Tuple[ChatAgent, ChatAgent]:
         r"""Initialize the agent."""
-        if model == 'gpt-4o':
+        if model == 'gpt-4o' or model == 'qwen-plus':
             web_agent_model = ModelFactory.create(
-                model_platform=ModelPlatformType.OPENAI,
-                model_type=ModelType.GPT_4O,
-                model_config_dict={"temperature": 0, "top_p": 1}
+                model_platform=ModelPlatformType.QWEN,
+                model_type=ModelType.QWEN_PLUS,
+                model_config_dict={"temperature": 0.3, "top_p": 0.9}
             )
-        elif model == 'gpt-4o-mini':
+        elif model == 'gpt-4o-mini' or model == 'qwen-turbo':
             web_agent_model = ModelFactory.create(
-                model_platform=ModelPlatformType.OPENAI,
-                model_type=ModelType.GPT_4O_MINI,
-                model_config_dict={"temperature": 0, "top_p": 1}
+                model_platform=ModelPlatformType.QWEN,
+                model_type=ModelType.QWEN_TURBO,
+                model_config_dict={"temperature": 0.3, "top_p": 0.9}
             )
         else:
             raise ValueError("Invalid model type.")
         
         planning_model = ModelFactory.create(
-            model_platform=ModelPlatformType.OPENAI,
-            model_type=ModelType.O3_MINI,
+            model_platform=ModelPlatformType.QWEN,
+            model_type=ModelType.QWEN_TURBO,
+            model_config_dict={"temperature": 0.3, "top_p": 0.9}
         )
         
         

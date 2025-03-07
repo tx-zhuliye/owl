@@ -1,7 +1,7 @@
 from camel.models import ModelFactory
 from camel.toolkits import *
 from camel.types import ModelPlatformType, ModelType
-from camel.configs import ChatGPTConfig
+from camel.configs import QwenConfig
 from utils import GAIABenchmark, process_tools
 
 from dotenv import load_dotenv
@@ -25,15 +25,15 @@ def main():
     os.makedirs(cache_dir, exist_ok=True)
 
     user_model = ModelFactory.create(
-        model_platform=ModelPlatformType.OPENAI,
-        model_type=ModelType.GPT_4O,
-        model_config_dict=ChatGPTConfig(temperature=0, top_p=1).as_dict(), # [Optional] the config for model
+        model_platform=ModelPlatformType.QWEN,
+        model_type=ModelType.QWEN_PLUS,
+        model_config_dict=QwenConfig(temperature=0.3, top_p=0.9).as_dict(),
     )
 
     assistant_model = ModelFactory.create(
-        model_platform=ModelPlatformType.OPENAI,
-        model_type=ModelType.GPT_4O,
-        model_config_dict=ChatGPTConfig(temperature=0, top_p=1).as_dict(), # [Optional] the config for model
+        model_platform=ModelPlatformType.QWEN,
+        model_type=ModelType.QWEN_PLUS,
+        model_config_dict=QwenConfig(temperature=0.3, top_p=0.9).as_dict(),
     )
 
     user_tools = []

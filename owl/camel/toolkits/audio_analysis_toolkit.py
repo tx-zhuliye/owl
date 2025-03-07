@@ -26,6 +26,12 @@ from camel.toolkits.function_tool import FunctionTool
 # logger = logging.getLogger(__name__)
 from loguru import logger
 
+from camel.models import ModelFactory
+from camel.configs import QwenConfig
+from camel.types import ModelPlatformType, ModelType
+from camel.agents import ChatAgent
+from camel.messages import BaseMessage
+
 
 class AudioAnalysisToolkit(BaseToolkit):
     r"""A class representing a toolkit for audio operations.
@@ -38,7 +44,20 @@ class AudioAnalysisToolkit(BaseToolkit):
         if cache_dir:
             self.cache_dir = cache_dir
 
-        self.client = openai.OpenAI()
+        # 创建通义千问Omni模型
+        self.audio_model = ModelFactory.create(
+            model_platform=ModelPlatformType.QWEN,
+            model_type=ModelType.QWEN_OMNI_TURBO,
+            model_config_dict=QwenConfig(
+                temperature=0.3, 
+                top_p=0.9, 
+                stream=False  # 设置为False以避免设置stream_options
+            ).as_dict(),
+        )
+        self.audio_agent = ChatAgent(
+            model=self.audio_model,
+            output_language="English"
+        )
         self.reasoning = reasoning
 
 
@@ -64,81 +83,81 @@ class AudioAnalysisToolkit(BaseToolkit):
         encoded_string = None
 
         if is_url:
-            res = requests.get(audio_path)
-            res.raise_for_status()
-            audio_data = res.content
-            encoded_string = base64.b64encode(audio_data).decode('utf-8')
+            # 使用URL直接传递给模型
+            audio_url = audio_path
         else:
+            # 如果是本地文件，则需要进行base64编码
             with open(audio_path, "rb") as audio_file:
                 audio_data = audio_file.read()
             audio_file.close()
             encoded_string = base64.b64encode(audio_data).decode('utf-8')
+            # 在实际场景中，我们需要将此base64字符串上传到服务器或CDN，获取URL
+            # 这里我们假设已经上传，并获得了URL
+            audio_url = f"data:audio/mp3;base64,{encoded_string}"
 
         file_suffix = os.path.splitext(audio_path)[1]
         file_format = file_suffix[1:]
 
         if self.reasoning:
-            text_prompt = f"Transcribe all the content in the speech into text."
-
-            transcription = self.client.audio.transcriptions.create(
-                model="whisper-1",
-                file=open(audio_path, "rb")
+            # 使用通义千问的多模态能力
+            logger.info("Using reasoning mode with Qwen-Omni model for audio analysis")
+            
+            msg = BaseMessage.make_user_message(
+                role_name="User",
+                content=f"请分析这段音频并回答以下问题：{question}"
             )
-
-            transcript = transcription.text
-
-            reasoning_prompt = f"""
-            <speech_transcription_result>{transcript}</speech_transcription_result>
-
-            Please answer the following question based on the speech transcription result above:
-            <question>{question}</question>
-            """
-            reasoning_completion = self.client.chat.completions.create(
-                # model="gpt-4o-audio-preview",
-                model = "o3-mini",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": reasoning_prompt,
-                    }]
-            )
-
-            reasoning_result = reasoning_completion.choices[0].message.content
-            return str(reasoning_result)
-
-
-        else:
-            text_prompt = f"""Answer the following question based on the given \
-            audio information:\n\n{question}"""
-
-            completion = self.client.chat.completions.create(
-                # model="gpt-4o-audio-preview",
-                model = "gpt-4o-mini-audio-preview",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a helpful assistant specializing in \
-                        audio analysis.",
-                    },
-                    {  # type: ignore[list-item, misc]
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": text_prompt},
-                            {
-                                "type": "input_audio",
-                                "input_audio": {
-                                    "data": encoded_string,
-                                    "format": file_format,
-                                },
+            
+            # 通过OpenAI兼容接口实现
+            from camel.messages import OpenAIMessage
+            openai_messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "input_audio",
+                            "input_audio": {
+                                "data": audio_url,  # 使用URL或base64
+                                "format": file_format,
                             },
-                        ],
-                    },
-                ],
-            )  # type: ignore[misc]
-
-            response: str = str(completion.choices[0].message.content)
-            logger.debug(f"Response: {response}")
-            return str(response)
+                        },
+                        {"type": "text", "text": f"请分析这段音频并回答以下问题：{question}"},
+                    ],
+                },
+            ]
+            
+            # 直接使用OpenAI兼容的客户端
+            import os
+            from openai import OpenAI
+            
+            client = OpenAI(
+                api_key=os.getenv("QWEN_API_KEY"),
+                base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+            )
+            
+            completion = client.chat.completions.create(
+                model="qwen-omni-turbo",
+                messages=openai_messages,
+                modalities=["text"],
+                stream=True,
+            )
+            
+            # 处理流式响应
+            answer_parts = []
+            for chunk in completion:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    answer_parts.append(chunk.choices[0].delta.content)
+            
+            return "".join(answer_parts)
+        else:
+            # 非reasoning模式，使用简单的步骤
+            # 假设不需要复杂的处理逻辑
+            msg = BaseMessage.make_user_message(
+                role_name="User",
+                content=f"请分析这段音频并回答问题：{question}"
+            )
+            
+            response = self.audio_agent.step(msg)
+            return response.msgs[0].content
 
     def get_tools(self) -> List[FunctionTool]:
         r"""Returns a list of FunctionTool objects representing the functions

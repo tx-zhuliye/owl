@@ -12,7 +12,7 @@ from camel.agents import ChatAgent
 from camel.responses import ChatAgentResponse
 from camel.messages.base import BaseMessage
 from camel.societies import RolePlaying
-from camel.models import OpenAIModel, ModelFactory
+from camel.models import ModelFactory
 from camel.types import ModelType, ModelPlatformType
 
 
@@ -100,8 +100,8 @@ class OwlRolePlaying(RolePlaying):
         # If the task is a reasoning task, the assistant agent should use the reasoning model O3-MINI
         if is_reasoning_task:
             assistant_agent_kwargs['model'] = ModelFactory.create(
-                model_platform=ModelPlatformType.OPENAI,
-                model_type=ModelType.O3_MINI,
+                model_platform=ModelPlatformType.QWEN,
+                model_type=ModelType.QWEN_PLUS,
             )
 
         self.assistant_agent = ChatAgent(
@@ -122,7 +122,10 @@ class OwlRolePlaying(RolePlaying):
     def _judge_if_reasoning_task(self, question: str) -> bool:
         r"""Judge if the question is a reasoning task."""
         
-        LLM = OpenAIModel(model_type=ModelType.O3_MINI)
+        LLM = ModelFactory.create(
+            model_platform=ModelPlatformType.QWEN,
+            model_type=ModelType.QWEN_PLUS,
+        )
         prompt = f"""
         Please judge whether the following question is a reasoning or coding task, which can be solved by reasoning without leveraging external resources, or is suitable for writing code to solve the task.
         If it is a reasoning or coding task, please return only "yes".
@@ -154,7 +157,7 @@ Please note that the task may be very complicated. Do not attempt to solve the t
 Here are some tips that will help you to give more valuable instructions about our task to me:
 <tips>
 - I have various tools to use, such as search toolkit, web browser simulation toolkit, document relevant toolkit, code execution toolkit, etc. Thus, You must think how human will solve the task step-by-step, and give me instructions just like that. For example, one may first use google search to get some initial information and the target url, then retrieve the content of the url, or do some web browser interaction to find the answer.
-- Although the task is complex, the answer does exist. If you can’t find the answer using the current scheme, try to re-plan and use other ways to find the answer, e.g. using other tools or methods that can achieve similar results.
+- Although the task is complex, the answer does exist. If you can't find the answer using the current scheme, try to re-plan and use other ways to find the answer, e.g. using other tools or methods that can achieve similar results.
 - Always remind me to verify my final answer about the overall task. This work can be done by using multiple tools(e.g., screenshots, webpage analysis, etc.), or something else.
 - If I have written code, please remind me to run the code and get the result.
 - Search results typically do not provide precise answers. It is not likely to find the answer directly using search toolkit only, the search query should be concise and focuses on finding sources rather than direct answers, as it always need to use other tools to further process the url, e.g. interact with the webpage, extract webpage content, etc. 

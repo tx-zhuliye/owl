@@ -19,7 +19,7 @@ from typing import List, Literal, Tuple
 from urllib.parse import urlparse
 
 from camel.agents import ChatAgent
-from camel.configs import ChatGPTConfig
+from camel.configs import ChatGPTConfig, QwenConfig
 from camel.toolkits.base import BaseToolkit
 from camel.toolkits import FunctionTool, CodeExecutionToolkit
 from camel.types import ModelType, ModelPlatformType
@@ -35,14 +35,32 @@ class ImageAnalysisToolkit(BaseToolkit):
     This class provides methods for understanding images, such as identifying
     objects, text in images.
     """
-    def __init__(self, model: Literal['gpt-4o', 'gpt-4o-mini'] = 'gpt-4o'):
+    def __init__(self, model: Literal['gpt-4o', 'gpt-4o-mini', 'qwen-vl-max', 'qwen-vl-plus', 'qwen-omni-turbo'] = 'gpt-4o'):
+        # 设置默认值
+        self.model_platform = ModelPlatformType.OPENAI
         self.model_type = ModelType.GPT_4O
+        
+        # 根据传入的模型名称设置对应的平台和类型
         if model == 'gpt-4o':
+            self.model_platform = ModelPlatformType.OPENAI
             self.model_type = ModelType.GPT_4O
         elif model == 'gpt-4o-mini':
+            self.model_platform = ModelPlatformType.OPENAI
             self.model_type = ModelType.GPT_4O_MINI
+        elif model == 'qwen-vl-max':
+            self.model_platform = ModelPlatformType.QWEN
+            self.model_type = ModelType.QWEN_VL_MAX
+        elif model == 'qwen-vl-plus':
+            self.model_platform = ModelPlatformType.QWEN
+            self.model_type = ModelType.QWEN_VL_PLUS
+        elif model == 'qwen-omni-turbo':
+            self.model_platform = ModelPlatformType.QWEN
+            self.model_type = ModelType.QWEN_OMNI_TURBO
         else:
             raise ValueError(f"Invalid model type: {model}")
+            
+        # 记录当前使用的模型
+        self.current_model = model
 
     def _construct_image_url(self, image_path: str) -> str:
         parsed_url = urlparse(image_path)
@@ -175,15 +193,40 @@ class ImageAnalysisToolkit(BaseToolkit):
         #         f"data:image/jpeg;base64,{self._encode_image(image_path)}"
         #     )
 
-        model = ModelFactory.create(
-            model_platform=ModelPlatformType.OPENAI,
-            model_type=self.model_type,
-        )
-
-        code_model = ModelFactory.create(
-            model_platform=ModelPlatformType.OPENAI,
-            model_type=ModelType.O3_MINI,
-        )
+        # 根据初始化时设置的模型平台和类型创建相应的模型
+        if self.model_platform == ModelPlatformType.OPENAI:
+            model = ModelFactory.create(
+                model_platform=self.model_platform,
+                model_type=self.model_type,
+                model_config_dict={"temperature": 0, "top_p": 1}
+            )
+            
+            code_model = ModelFactory.create(
+                model_platform=self.model_platform,
+                model_type=ModelType.O3_MINI,
+            )
+        elif self.model_platform == ModelPlatformType.QWEN:
+            # 创建配置，如果是Omni模型，必须设置stream为True
+            config = {"temperature": 0.3, "top_p": 0.9}
+            
+            # 如果是Omni模型，添加必要的参数
+            if self.model_type == ModelType.QWEN_OMNI_TURBO:
+                config["stream"] = True
+                config["modalities"] = ["text"]
+                
+            model = ModelFactory.create(
+                model_platform=self.model_platform,
+                model_type=self.model_type,
+                model_config_dict=QwenConfig(**config).as_dict(),
+            )
+            
+            code_model = ModelFactory.create(
+                model_platform=self.model_platform,
+                model_type=ModelType.QWEN_TURBO,
+                model_config_dict=QwenConfig(temperature=0.3, top_p=0.9).as_dict(),
+            )
+        else:
+            raise ValueError(f"Unsupported model platform: {self.model_platform}")
 
         code_execution_toolkit = CodeExecutionToolkit(require_confirm=False, sandbox="subprocess", verbose=True)
 

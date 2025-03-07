@@ -3,6 +3,7 @@ sys.path.append("../")
 
 import json
 import re
+import os
 from typing import Dict, Optional, List
 from loguru import logger
 
@@ -50,11 +51,13 @@ def process_tools(tools: List[str] | str) -> List[FunctionTool]:
             if tool_name == "CodeExecutionToolkit":
                 tool_list.extend(toolkit_class(sandbox="subprocess", verbose=True).get_tools())
             elif tool_name == 'ImageAnalysisToolkit':
-                tool_list.extend(toolkit_class(model="gpt-4o").get_tools())
+                tool_list.extend(toolkit_class(model="qwen-omni-turbo").get_tools())
             elif tool_name == 'AudioAnalysisToolkit':
-                tool_list.extend(toolkit_class(reasoning=True).get_tools())
+                # 创建一个空的缓存目录（如果不存在）
+                os.makedirs("tmp", exist_ok=True)
+                tool_list.extend(toolkit_class(cache_dir="tmp", reasoning=True).get_tools())
             elif tool_name == "WebToolkit":
-                tool_list.extend(toolkit_class(headless=True).get_tools())
+                tool_list.extend(toolkit_class(headless=True, model="qwen-plus").get_tools())
             else:
                 tool_list.extend(toolkit_class().get_tools())
 

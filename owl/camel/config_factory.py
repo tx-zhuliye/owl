@@ -8,16 +8,16 @@ from camel.configs import (
 from camel.types import ModelPlatformType
 
 def create_config(model_platform: ModelPlatformType, **kwargs) -> Dict[str, Any]:
-    """创建适合指定模型平台的配置。
+    """Create configuration suitable for the specified model platform.
     
     Args:
-        model_platform: 模型平台类型
-        **kwargs: 配置参数
+        model_platform: Type of model platform
+        **kwargs: Configuration parameters
         
     Returns:
-        Dict[str, Any]: 配置字典
+        Dict[str, Any]: Configuration dictionary
     """
-    # 根据平台类型选择合适的配置类
+    # Select appropriate config class based on platform type
     if model_platform.is_openai:
         config = ChatGPTConfig(**kwargs)
     elif model_platform.is_deepseek:
@@ -45,7 +45,7 @@ def create_config(model_platform: ModelPlatformType, **kwargs) -> Dict[str, Any]
     elif model_platform.is_nvidia:
         config = NvidiaConfig(**kwargs)
     else:
-        # 默认使用OpenAI配置
+        # Use OpenAI config as default
         config = ChatGPTConfig(**kwargs)
     
     return config.as_dict()

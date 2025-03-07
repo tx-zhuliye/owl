@@ -4,7 +4,8 @@ load_dotenv()
 from camel.models import ModelFactory
 from camel.toolkits import *
 from camel.types import ModelPlatformType, ModelType
-from camel.configs import ChatGPTConfig
+#from camel.configs import ChatGPTConfig
+from camel.configs import create_config
 
 from typing import List, Dict
 
@@ -23,16 +24,25 @@ def construct_society(question: str) -> OwlRolePlaying:
     user_role_name = "user"
     assistant_role_name = "assistant"
     
+    user_model_config_params = {
+        "temperature": 0, 
+        "top_p": 1
+    }
+    assistant_model_config_params = {
+        "temperature": 0, 
+        "top_p": 1
+    }
+    
     user_model = ModelFactory.create(
         model_platform=ModelPlatformType.DEFAULT,
         model_type=ModelType.DEFAULT,
-        model_config_dict=ChatGPTConfig(temperature=0, top_p=1).as_dict(), # [Optional] the config for model
+        model_config_dict=create_config(ModelPlatformType.DEFAULT, **user_model_config_params), # [Optional] the config for model
     )
 
     assistant_model = ModelFactory.create(
         model_platform=ModelPlatformType.DEFAULT,
         model_type=ModelType.DEFAULT,
-        model_config_dict=ChatGPTConfig(temperature=0, top_p=1).as_dict(), # [Optional] the config for model
+        model_config_dict=create_config(ModelPlatformType.DEFAULT, **assistant_model_config_params), # [Optional] the config for model
     )
 
     tools_list = [

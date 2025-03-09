@@ -776,6 +776,7 @@ class WebToolkit(BaseToolkit):
                  history_window: int = 5,
                  web_agent_model: Optional[BaseModelBackend] = None,
                  planning_agent_model: Optional[BaseModelBackend] = None,
+                 output_language: str = "en"
                  ): 
         
         self.browser = BaseBrowser(
@@ -787,6 +788,7 @@ class WebToolkit(BaseToolkit):
         self.history_window = history_window
         self.web_agent_model = web_agent_model
         self.planning_agent_model = planning_agent_model
+        self.output_language = output_language
         
         self.history = []
         # self.search_toolkit = SearchToolkit()
@@ -827,6 +829,7 @@ Given a high-level task, you can leverage predefined browser tools to help users
         web_agent = ChatAgent(
             system_message=system_prompt,
             model=web_agent_model,
+            output_language=self.output_language
             )
         
         planning_system_prompt = """
@@ -835,7 +838,8 @@ You are a helpful planning agent that can assist users in planning complex tasks
 
         planning_agent = ChatAgent(
             system_message=planning_system_prompt,
-            model=planning_model
+            model=planning_model,
+            output_language=self.output_language
         )
         
         return web_agent, planning_agent

@@ -138,7 +138,7 @@ Chat-based execution (chat), the agent also has a chat-based approach, using the
 {name}.reset()
 
 # Text to image
-capybara_image = {name}.chat("Show me an an image of a capybara")
+capybara_image = {name}.chat("Show me an image of a capybara")
 capybara_image.save("./capybara_image.png")
 
 # Image transformation

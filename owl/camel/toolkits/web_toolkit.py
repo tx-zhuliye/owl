@@ -106,26 +106,60 @@ def _get_bool(d: Any, k: str) -> bool:
 
 
 def _parse_json_output(text: str) -> Dict[str, Any]:
-    # judge if text is markdown format (```json ````)
-    if "```json" in text and "```" in text:
-        # Extract content between ```json and the last ```
-        start_idx = text.find("```json") + len("```json")
-        end_idx = text.rfind("```")
-        if start_idx > -1 and end_idx > start_idx:
-            text = text[start_idx:end_idx].strip()
+    """Extract JSON output from a string."""
+    
+    markdown_pattern = r'```(?:json)?\s*(.*?)\s*```'
+    markdown_match = re.search(markdown_pattern, text, re.DOTALL)
+    if markdown_match:
+        text = markdown_match.group(1).strip()
+    
+    triple_quotes_pattern = r'"""(?:json)?\s*(.*?)\s*"""'
+    triple_quotes_match = re.search(triple_quotes_pattern, text, re.DOTALL)
+    if triple_quotes_match:
+        text = triple_quotes_match.group(1).strip()
+    
+    text = text.replace("`", '"')
     
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        logger.warning(f"Failed to parse JSON output: {text}")
-        # Try to clean the text further and attempt parsing again
         try:
-            # Remove any extra whitespace or control characters
-            cleaned_text = text.strip()
-            return json.loads(cleaned_text)
+            fixed_text = re.sub(r'`([^`]*)`', r'"\1"', text)
+            return json.loads(fixed_text)
         except json.JSONDecodeError:
-            logger.error(f"Failed to parse JSON even after cleaning: {text}")
-            return {}
+            result = {}
+            try:
+                bool_pattern = r'"(\w+)"\s*:\s*(true|false)'
+                for match in re.finditer(bool_pattern, text, re.IGNORECASE):
+                    key, value = match.groups()
+                    result[key] = value.lower() == "true"
+                    
+                str_pattern = r'"(\w+)"\s*:\s*"([^"]*)"'
+                for match in re.finditer(str_pattern, text):
+                    key, value = match.groups()
+                    result[key] = value
+                
+                num_pattern = r'"(\w+)"\s*:\s*(-?\d+(?:\.\d+)?)'
+                for match in re.finditer(num_pattern, text):
+                    key, value = match.groups()
+                    try:
+                        result[key] = int(value)
+                    except ValueError:
+                        result[key] = float(value)
+                
+                empty_str_pattern = r'"(\w+)"\s*:\s*""'
+                for match in re.finditer(empty_str_pattern, text):
+                    key = match.group(1)
+                    result[key] = ""
+                
+                if result:
+                    return result
+                
+                logger.warning(f"Failed to parse JSON output: {text}")
+                return {}
+            except Exception as e:
+                logger.warning(f"Error while extracting fields from JSON: {e}")
+                return {}
 
 
 def _reload_image(image: Image.Image):
@@ -379,7 +413,9 @@ class BaseBrowser:
         file_path = None
         if save_image:
             # get url name to form a file name
-            url_name = self.page_url.split("/")[-1].replace(".", "_").replace(":", "_")
+            url_name = self.page_url.split("/")[-1]
+            for char in ['\\', '/', ':', '*', '?', '"', '<', '>', '|', '.']:
+                url_name = url_name.replace(char, "_")
             
             # get formatted time: mmddhhmmss
             timestamp = datetime.datetime.now().strftime("%m%d%H%M%S")
@@ -486,14 +522,16 @@ class BaseBrowser:
         file_path = None
         comp, visible_rects, rects_above, rects_below = add_set_of_mark(screenshot, rects)
         if save_image:
-            url_name = self.page_url.split("/")[-1].replace(".", "_").replace(":", "_")
+            url_name = self.page_url.split("/")[-1]
+            for char in ['\\', '/', ':', '*', '?', '"', '<', '>', '|', '.']:
+                url_name = url_name.replace(char, "_")
             timestamp = datetime.datetime.now().strftime("%m%d%H%M%S")
             file_path = os.path.join(self.cache_dir, f"{url_name}_{timestamp}.png")
             with open(file_path, "wb") as f:
                 comp.save(f, "PNG")
             f.close()
         
-        return comp, file_path    
+        return comp, file_path   
             
     
     def scroll_up(self) -> None:

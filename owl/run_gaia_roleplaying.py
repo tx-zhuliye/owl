@@ -91,11 +91,12 @@ def main():
     # Configure agent roles and parameters
     user_agent_kwargs = {"model": models["user"]}
     assistant_agent_kwargs = {"model": models["assistant"], "tools": tools}
-
+    result_file = os.path.join(cache_dir, "results/result.json")
+    os.makedirs(os.path.dirname(result_file), exist_ok=True)
     # Initialize benchmark
     benchmark = GAIABenchmark(
         data_dir="data/gaia",
-        save_to=f"results/result.json"
+        save_to=result_file
     )
 
     # Print benchmark information

@@ -398,43 +398,66 @@ class OwlGaiaRolePlaying(OwlRolePlaying):
 
 
 def run_society(society: RolePlaying, round_limit: int = 15) -> Tuple[str, List[dict], dict]:
-
     overall_completion_token_count = 0
     overall_prompt_token_count = 0
-
     chat_history = []
     init_prompt = f"""
 Now please give me instructions to solve over overall task step by step. If the task requires some specific knowledge, please instruct me to use tools to complete the task.
     """
     input_msg = society.init_chat(init_prompt)
+    from camel.agents.error_handler import ErrorHandlingAgent
+    # 创建 ErrorHandlingAgent 实例
+    from camel.configs import DeepSeekConfig
+    error_model = ModelFactory.create(
+        model_platform=ModelPlatformType.DEEPSEEK,
+        model_type=ModelType.DEEPSEEK_CHAT,
+        model_config_dict=DeepSeekConfig(temperature=0, top_p=1).as_dict(), # [Optional] the config for model
+    )
+    error_handling_agent = ErrorHandlingAgent(
+        model=error_model,
+        name="Error Handler",
+        system_message="处理任务执行中的错误",
+        task_manager=None  # 如果需要任务管理，可以传递相应的任务管理器
+    )
+
     for _round in range(round_limit):
+        try:
+            assistant_response, user_response = society.step(input_msg)
+            overall_completion_token_count += (assistant_response.info['usage']['completion_tokens'] + user_response.info['usage']['completion_tokens'])
+            overall_prompt_token_count += (assistant_response.info['usage']['prompt_tokens'] + user_response.info['usage']['prompt_tokens'])
 
-        assistant_response, user_response = society.step(input_msg)
-        overall_completion_token_count += (assistant_response.info['usage']['completion_tokens'] + user_response.info['usage']['completion_tokens'])
-        overall_prompt_token_count += (assistant_response.info['usage']['prompt_tokens'] + user_response.info['usage']['prompt_tokens'])
+            # 转换工具调用为字典
+            tool_call_records: List[dict] = []
+            for tool_call in assistant_response.info['tool_calls']:
+                tool_call_records.append(tool_call.as_dict())
 
-        # convert tool call to dict
-        tool_call_records: List[dict] = []
-        for tool_call in assistant_response.info['tool_calls']:
-            tool_call_records.append(tool_call.as_dict())
+            _data = {
+                'user': user_response.msg.content,
+                'assistant': assistant_response.msg.content,
+                'tool_calls': tool_call_records
+            }
 
-        _data = {
-            'user': user_response.msg.content,
-            'assistant': assistant_response.msg.content,
-            'tool_calls': tool_call_records
-        }
-
-        chat_history.append(_data)
-        logger.info(f"Round #{_round} user_response:\n {user_response.msgs[0].content}")
-        logger.info(f"Round #{_round} assistant_response:\n {assistant_response.msgs[0].content}")
+            chat_history.append(_data)
+            logger.info(f"Round #{_round} user_response:\n {user_response.msgs[0].content}")
+            logger.info(f"Round #{_round} assistant_response:\n {assistant_response.msgs[0].content}")
+            
+            if assistant_response.terminated or user_response.terminated or "TASK_DONE" in user_response.msg.content:
+                break
+            
+            input_msg = assistant_response.msg
         
-        if assistant_response.terminated or user_response.terminated or "TASK_DONE" in user_response.msg.content:
-            break
-        
-        input_msg = assistant_response.msg
-    
-    
-    answer = chat_history[-1]['assistant']
+        except Exception as e:
+            from colorama import Fore
+            print(Fore.RED + f"在第 {_round} 轮执行任务时发生错误: {e}")
+            # 处理错误，生成修复计划
+            error_handling_agent.handle_error(str(e), input_msg, task_node=None)
+            if error_handling_agent.execute_error_plan(input_msg):
+                print(Fore.GREEN + "错误已成功修复，继续执行任务。")
+            else:
+                print(Fore.RED + "错误无法修复，任务终止。")
+                break
+
+    answer = chat_history[-1]['assistant'] if chat_history else ""
     token_info = {
         "completion_token_count": overall_completion_token_count,
         "prompt_token_count": overall_prompt_token_count

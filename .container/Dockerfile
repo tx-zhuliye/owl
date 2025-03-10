@@ -93,10 +93,10 @@ WORKDIR /app/owl
 # 设置适当的权限
 RUN chown -R owl:owl /app
 RUN mkdir -p /root/.cache && chown -R owl:owl /root/.cache
+RUN chmod 644 /app/owl/.env
 
-# 切换到非root用户
-# 注意：如果需要访问/dev/shm，可能仍需要root用户
-# USER owl
+
+USER owl
 
 # 添加健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

@@ -11,7 +11,7 @@ services:
         - python:3.10-slim
     volumes:
       # 挂载.env文件，方便配置API密钥
-      - ./owl/.env:/app/owl/.env
+      - ../owl/.env:/app/owl/.env
       # 可选：挂载数据目录
       - ./data:/app/data
       # 挂载缓存目录，避免重复下载

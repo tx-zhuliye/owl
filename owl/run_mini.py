@@ -17,6 +17,7 @@ from camel.models import ModelFactory
 from camel.toolkits import (
     SearchToolkit,
     WebToolkit,
+    FileWriteToolkit
 )
 from camel.types import ModelPlatformType, ModelType
 from camel.logger import set_log_level
@@ -62,8 +63,15 @@ def construct_society(question: str) -> OwlRolePlaying:
         ),
     }
 
+    output_dir = "./file_write_outputs"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Initialize the FileWriteToolkit with the output directory
+    file_toolkit = FileWriteToolkit(output_dir=output_dir)
+    
     # Configure toolkits
     tools = [
+        *file_toolkit.get_tools(),
         *WebToolkit(
             headless=False,  # Set to True for headless mode (e.g., on remote servers)
             web_agent_model=models["web"],

@@ -26,6 +26,7 @@ from camel.toolkits import (
     CodeExecutionToolkit,
     ExcelToolkit,
     SearchToolkit,
+    FileWriteToolkit,
 )
 from camel.types import ModelPlatformType, ModelType
 
@@ -88,8 +89,15 @@ def construct_society(question: str) -> OwlRolePlaying:
         ),
     }
 
+    output_dir = "./file_write_outputs"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Initialize the FileWriteToolkit with the output directory
+    file_toolkit = FileWriteToolkit(output_dir=output_dir)
+    
     # Configure toolkits
     tools = [
+        *file_toolkit.get_tools(),
         *CodeExecutionToolkit(sandbox="subprocess", verbose=True).get_tools(),
         SearchToolkit().search_duckduckgo,
         SearchToolkit().search_wiki,

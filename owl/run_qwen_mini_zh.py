@@ -19,7 +19,7 @@
 from dotenv import load_dotenv
 
 from camel.models import ModelFactory
-from camel.toolkits import WebToolkit, SearchToolkit
+from camel.toolkits import WebToolkit, SearchToolkit, FileWriteToolkit
 from camel.types import ModelPlatformType, ModelType
 
 from utils import OwlRolePlaying, run_society
@@ -61,7 +61,15 @@ def construct_society(question: str) -> OwlRolePlaying:
         model_config_dict={"temperature": 0},
     )
 
-    tools_list = [
+    output_dir = "./file_write_outputs"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Initialize the FileWriteToolkit with the output directory
+    file_toolkit = FileWriteToolkit(output_dir=output_dir)
+    
+    # Configure toolkits
+    tools = [
+        *file_toolkit.get_tools(),
         *WebToolkit(
             headless=False,
             web_agent_model=web_model,

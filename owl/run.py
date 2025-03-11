@@ -12,11 +12,12 @@
 # limitations under the License.
 # ========= Copyright 2023-2024 @ CAMEL-AI.org. All Rights Reserved. =========
 from dotenv import load_dotenv
+import os
 from camel.models import ModelFactory
 from camel.toolkits import (
     AudioAnalysisToolkit,
     CodeExecutionToolkit,
-     FileWriteToolkit,
+    FileWriteToolkit,
     ExcelToolkit,
     ImageAnalysisToolkit,
     SearchToolkit,
@@ -86,7 +87,7 @@ def construct_society(question: str) -> OwlRolePlaying:
 
     # Initialize the FileWriteToolkit with the output directory
     file_toolkit = FileWriteToolkit(output_dir=output_dir)
-    
+
     # Configure toolkits
     tools = [
         *file_toolkit.get_tools(),

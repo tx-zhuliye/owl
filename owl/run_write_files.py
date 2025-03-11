@@ -87,7 +87,7 @@ def construct_society(question: str) -> OwlRolePlaying:
 
     # Initialize the FileWriteToolkit with the output directory
     file_toolkit = FileWriteToolkit(output_dir=output_dir)
-    
+
     # Configure toolkits
     tools = [
         *file_toolkit.get_tools(),
@@ -132,13 +132,14 @@ def construct_society(question: str) -> OwlRolePlaying:
 def main():
     r"""Main function to run the OWL system with an example question."""
     # Example research question
-    question ="""请使用文件写入工具生成一个Python脚本，创建一个简单的Flask网络服务器，并将其保存到file_write_outputs目录中的flask_server.py文件。脚本应该包含基本的路由和启动服务器的代码。"""
+    question = """请使用文件写入工具生成一个Python脚本，创建一个简单的Flask网络服务器，并将其保存到file_write_outputs目录中的flask_server.py文件。脚本应该包含基本的路由和启动服务器的代码。"""
     # Construct and run the society
     society = construct_society(question)
     answer, chat_history, token_count = run_society(society)
 
     # Output the result
     print(f"\033[94mAnswer: {answer}\033[0m")
+
 
 if __name__ == "__main__":
     main()

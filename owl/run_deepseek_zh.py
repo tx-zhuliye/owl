@@ -20,7 +20,7 @@
 
 from dotenv import load_dotenv
 
-
+import os
 from camel.models import ModelFactory
 from camel.toolkits import (
     CodeExecutionToolkit,
@@ -94,7 +94,7 @@ def construct_society(question: str) -> OwlRolePlaying:
 
     # Initialize the FileWriteToolkit with the output directory
     file_toolkit = FileWriteToolkit(output_dir=output_dir)
-    
+
     # Configure toolkits
     tools = [
         *file_toolkit.get_tools(),

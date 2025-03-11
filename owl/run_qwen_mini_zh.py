@@ -17,7 +17,7 @@
 # Set it as QWEN_API_KEY="your-api-key" in your .env file or add it to your environment variables
 
 from dotenv import load_dotenv
-
+import os
 from camel.models import ModelFactory
 from camel.toolkits import WebToolkit, SearchToolkit, FileWriteToolkit
 from camel.types import ModelPlatformType, ModelType
@@ -66,9 +66,9 @@ def construct_society(question: str) -> OwlRolePlaying:
 
     # Initialize the FileWriteToolkit with the output directory
     file_toolkit = FileWriteToolkit(output_dir=output_dir)
-    
+
     # Configure toolkits
-    tools = [
+    tools_list = [
         *file_toolkit.get_tools(),
         *WebToolkit(
             headless=False,

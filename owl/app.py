@@ -25,7 +25,7 @@ import signal
 import dotenv
 
 # 设置日志队列
-log_queue = queue.Queue()
+log_queue: queue.Queue[str] = queue.Queue()
 
 # 当前运行的进程
 current_process = None

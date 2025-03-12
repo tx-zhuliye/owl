@@ -16,6 +16,7 @@ import difflib
 import importlib
 import typing
 from typing import Any, ClassVar, Dict, List, Optional
+import concurrent.futures
 
 from camel.interpreters.base import BaseInterpreter
 from camel.interpreters.interpreter_error import InterpreterError
@@ -86,6 +87,7 @@ class InternalPythonInterpreter(BaseInterpreter):
         import_white_list: Optional[List[str]] = None,
         unsafe_mode: bool = False,
         raise_error: bool = False,
+        default_timeout:int = 60
     ) -> None:
         self.action_space = action_space or dict()
         self.state = self.action_space.copy()
@@ -93,8 +95,8 @@ class InternalPythonInterpreter(BaseInterpreter):
         self.import_white_list = import_white_list or list()
         self.raise_error = raise_error
         self.unsafe_mode = unsafe_mode
-
-    def run(self, code: str, code_type: str) -> str:
+        self.default_timeout = default_timeout
+    def run(self, code: str, code_type: str, timeout:int =None) -> str:
         r"""Executes the given code with specified code type in the
         interpreter.
 
@@ -126,7 +128,7 @@ class InternalPythonInterpreter(BaseInterpreter):
                 f"{', '.join(self._CODE_TYPES)}."
             )
         if not self.unsafe_mode:
-            return str(self.execute(code))
+            return str(self.execute(code, timeout=timeout))
         else:
             return str(eval(code, self.action_space))
 
@@ -144,6 +146,7 @@ class InternalPythonInterpreter(BaseInterpreter):
         state: Optional[Dict[str, Any]] = None,
         fuzz_state: Optional[Dict[str, Any]] = None,
         keep_state: bool = True,
+        timeout:int = None
     ) -> Any:
         r"""Execute the input python codes in a security environment.
 
@@ -186,7 +189,11 @@ class InternalPythonInterpreter(BaseInterpreter):
         result = None
         for idx, node in enumerate(expression.body):
             try:
-                line_result = self._execute_ast(node)
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(self._execute_ast, node)
+                    line_result = future.result(timeout=timeout or self.default_timeout)
+            except concurrent.futures.TimeoutError:
+                raise InterpreterError("Code execution timed out.")
             except InterpreterError as e:
                 if not keep_state:
                     self.clear_state()

@@ -76,15 +76,18 @@ class SubprocessInterpreter(BaseInterpreter):
         require_confirm: bool = True,
         print_stdout: bool = False,
         print_stderr: bool = True,
+        default_timeout: int = 60,
     ) -> None:
         self.require_confirm = require_confirm
         self.print_stdout = print_stdout
         self.print_stderr = print_stderr
+        self.default_timeout = default_timeout
 
     def run_file(
         self,
         file: Path,
         code_type: str,
+        timeout: int = None
     ) -> str:
         r"""Executes a code file in a subprocess and captures its output.
 
@@ -109,7 +112,7 @@ class SubprocessInterpreter(BaseInterpreter):
         )
 
         proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=timeout if timeout is not None else self.default_timeout,
         )
         stdout, stderr = proc.communicate()
         if self.print_stdout and stdout:

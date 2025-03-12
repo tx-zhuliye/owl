@@ -48,10 +48,13 @@ class CodeExecutionToolkit(BaseToolkit):
         unsafe_mode: bool = False,
         import_white_list: Optional[List[str]] = None,
         require_confirm: bool = False,
+        mirror_url: str = "https://mirrors.aliyun.com/pypi/simple/"
     ) -> None:
         self.verbose = verbose
         self.unsafe_mode = unsafe_mode
         self.import_white_list = import_white_list or list()
+        if "PIP_INDEX_URL" not in os.environ:
+            os.environ["PIP_INDEX_URL"] = mirror_url
 
         # Type annotation for interpreter to allow all possible types
         self.interpreter: Union[

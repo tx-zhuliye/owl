@@ -15,20 +15,15 @@ WORKDIR /app
 # 安装系统依赖（合并为一个RUN命令减少层数）
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl git ffmpeg libsm6 libxext6 xvfb xauth x11-utils \
+    vim \
     build-essential python3-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-# 复制项目文件
-COPY owl/ ./owl/
-COPY licenses/ ./licenses/
-COPY assets/ ./assets/
-COPY examples/ ./examples/
-COPY README.md .
-COPY README_zh.md .
-COPY pyproject.toml .
 
-# 创建README.md文件以避免构建错误
-RUN echo "# OWL Project\n\n这是OWL项目的Docker环境。" > README.md
+# 复制pyproject.toml文件
+COPY pyproject.toml .
+COPY README.md .
+
 # 安装uv工具
 RUN pip install uv
 
@@ -38,6 +33,12 @@ RUN uv venv .venv --python=3.10 && \
     uv pip install -e .
 
 
+# 复制项目文件
+COPY owl/ ./owl/
+COPY licenses/ ./licenses/
+COPY assets/ ./assets/
+COPY examples/ ./examples/
+COPY README_zh.md .
 
 
 # 创建启动脚本

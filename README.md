@@ -263,6 +263,7 @@ cp owl/.env_template owl/.env
 
 
 # Option 1: Using docker-compose directly
+cd ..
 cd .container
 
 docker-compose up -d
@@ -279,6 +280,7 @@ playwright install-deps
 xvfb-python examples/run.py
 
 # Option 2: Build and run using the provided scripts
+cd ..
 cd .container
 chmod +x build_docker.sh
 ./build_docker.sh

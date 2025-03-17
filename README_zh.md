@@ -125,6 +125,8 @@ https://private-user-images.githubusercontent.com/55657767/420211368-f29f477d-7e
 
 https://private-user-images.githubusercontent.com/55657767/420212194-e813fc05-136a-485f-8df3-f10d9b4e63ec.mp4
 
+https://github.com/camel-ai/owl/blob/43984bfc968d62e7174b0c1e6283fefe08c44b45/OWL之Excel文件处理.mp4
+
 # ✨️ 核心功能
 
 - **在线搜索**：支持多种搜索引擎（包括维基百科、Google、DuckDuckGo、百度、博查等），实现实时信息检索与知识获取
@@ -327,7 +329,7 @@ npx -y @wonderwhy-er/desktop-commander setup --force-file-protocol
 # 🚀 快速开始
 
 ## 基本用法
-   
+
 运行以下示例：
 
 ```bash

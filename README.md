@@ -126,6 +126,8 @@ https://github.com/user-attachments/assets/2a2a825d-39ea-45c5-9ba1-f9d58efbc372
 
 https://private-user-images.githubusercontent.com/55657767/420212194-e813fc05-136a-485f-8df3-f10d9b4e63ec.mp4
 
+[添加硅基流动配置及调用脚本，使OWL支持硅基流动接口调用。另外，修改example目录下的脚本执行方式为可传参动态提问。 by BoldChampion · Pull Request #339 · camel-ai/owl](https://github.com/camel-ai/owl/pull/339/commits/43984bfc968d62e7174b0c1e6283fefe08c44b45#diff-917077a2f41e6fa0fbe4d35f09b7042a578826a11428e4fafa08ff6430c053e5)
+
 # ✨️ Core Features
 
 - **Online Search**: Support for multiple search engines (including Wikipedia, Google, DuckDuckGo, Baidu, Bocha, etc.) for real-time information retrieval and knowledge acquisition.

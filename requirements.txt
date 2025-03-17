@@ -2,3 +2,13 @@ camel-ai[all]==0.2.32
 chunkr-ai>=0.0.41
 docx2markdown>=0.1.1
 gradio>=3.50.2
+
+tqdm~=4.67.1
+requests~=2.32.3
+xmltodict~=0.14.2
+nest-asyncio~=1.6.0
+utils~=1.0.2
+python-dotenv~=1.0.1
+asyncio~=3.4.3
+pandas>=1.5.3
+dotenv>=0.9.9

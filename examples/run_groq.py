@@ -41,7 +41,7 @@ from camel.toolkits import (
 from camel.types import ModelPlatformType, ModelType
 from camel.logger import set_log_level
 
-from utils import OwlRolePlaying, run_society, DocumentProcessingToolkit
+from owl.utils import OwlRolePlaying, run_society, DocumentProcessingToolkit
 
 load_dotenv()
 

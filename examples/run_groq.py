@@ -23,7 +23,7 @@ It configures different agent roles with appropriate Groq models based on their 
 To use this module:
 1. Set GROQ_API_KEY in your .env file
 2. Set OPENAI_API_BASE_URL to "https://api.groq.com/openai/v1"
-3. Run with: python -m owl.run_groq
+3. Run with: python -m examples.run_groq
 """
 
 from dotenv import load_dotenv
@@ -41,7 +41,7 @@ from camel.toolkits import (
 from camel.types import ModelPlatformType, ModelType
 from camel.logger import set_log_level
 
-from utils import OwlRolePlaying, run_society, DocumentProcessingToolkit
+from owl.utils import OwlRolePlaying, run_society, DocumentProcessingToolkit
 
 load_dotenv()
 

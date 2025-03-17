@@ -246,6 +246,7 @@ MODULE_DESCRIPTIONS = {
     "run_ollama": "使用本地ollama模型处理任务",
     "run_qwen_mini_zh": "使用qwen模型最小化配置处理任务",
     "run_qwen_zh": "使用qwen模型处理任务",
+    "run_multi_platform_model": "使用多平台模型处理任务",
 }
 
 

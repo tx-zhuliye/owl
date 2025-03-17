@@ -246,6 +246,7 @@ MODULE_DESCRIPTIONS = {
     "run_ollama": "Using local ollama model to process tasks",
     "run_qwen_mini_zh": "Using qwen model with minimal configuration to process tasks",
     "run_qwen_zh": "Using qwen model to process tasks",
+    "run_multi_platform_model": "Using multi platform model to process tasks",
 }
 
 

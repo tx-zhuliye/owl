@@ -135,7 +135,9 @@ def main():
 
     # Construct and run the society
     society = construct_society(question)
-    answer, chat_history, token_count = run_society(society)
+    
+    import asyncio
+    answer, chat_history, token_count = asyncio.run(run_society(society))
 
     # Output the result
     print(f"\033[94mAnswer: {answer}\033[0m")

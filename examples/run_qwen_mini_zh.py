@@ -19,19 +19,25 @@
 from dotenv import load_dotenv
 
 from camel.models import ModelFactory
-from camel.toolkits import WebToolkit, SearchToolkit
+from camel.toolkits import BrowserToolkit, SearchToolkit, FileWriteToolkit
 from camel.types import ModelPlatformType, ModelType
 
-from utils import OwlRolePlaying, run_society
+from owl.utils import run_society
+
+from camel.societies import RolePlaying
 
 from camel.logger import set_log_level
 
+import pathlib
+
+base_dir = pathlib.Path(__file__).parent.parent
+env_path = base_dir / "owl" / ".env"
+load_dotenv(dotenv_path=str(env_path))
+
 set_log_level(level="DEBUG")
 
-load_dotenv()
 
-
-def construct_society(question: str) -> OwlRolePlaying:
+def construct_society(question: str) -> RolePlaying:
     r"""Construct the society based on the question."""
 
     user_role_name = "user"
@@ -39,19 +45,19 @@ def construct_society(question: str) -> OwlRolePlaying:
 
     user_model = ModelFactory.create(
         model_platform=ModelPlatformType.QWEN,
-        model_type=ModelType.QWEN_VL_MAX,
+        model_type=ModelType.QWEN_MAX,
         model_config_dict={"temperature": 0},
     )
 
     assistant_model = ModelFactory.create(
         model_platform=ModelPlatformType.QWEN,
-        model_type=ModelType.QWEN_VL_MAX,
+        model_type=ModelType.QWEN_MAX,
         model_config_dict={"temperature": 0},
     )
 
     planning_model = ModelFactory.create(
         model_platform=ModelPlatformType.QWEN,
-        model_type=ModelType.QWEN_VL_MAX,
+        model_type=ModelType.QWEN_MAX,
         model_config_dict={"temperature": 0},
     )
 
@@ -62,13 +68,14 @@ def construct_society(question: str) -> OwlRolePlaying:
     )
 
     tools_list = [
-        *WebToolkit(
+        *BrowserToolkit(
             headless=False,
             web_agent_model=web_model,
             planning_agent_model=planning_model,
             output_language="Chinese",
         ).get_tools(),
-        SearchToolkit().search_duckduckgo,
+        SearchToolkit().search_baidu,
+        *FileWriteToolkit(output_dir="./").get_tools(),
     ]
 
     user_role_name = "user"
@@ -81,7 +88,7 @@ def construct_society(question: str) -> OwlRolePlaying:
         "with_task_specify": False,
     }
 
-    society = OwlRolePlaying(
+    society = RolePlaying(
         **task_kwargs,
         user_role_name=user_role_name,
         user_agent_kwargs=user_agent_kwargs,

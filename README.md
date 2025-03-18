@@ -364,8 +364,10 @@ python examples/run_qwen_zh.py
 # Run with Deepseek model
 python examples/run_deepseek_zh.py
 
-# Run with other OpenAI-compatible models
+# Run with other OpenAI-compatible models, supporting different models for different roles
 python examples/run_openai_compatiable_model.py
+# Example with question
+python examples/run_openai_compatiable_model.py "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."
 
 # Run with Azure OpenAI
 python examples/run_azure_openai.py

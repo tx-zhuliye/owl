@@ -363,8 +363,10 @@ python examples/run_qwen_zh.py
 # 使用 Deepseek 模型运行
 python examples/run_deepseek_zh.py
 
-# 使用其他 OpenAI 兼容模型运行
+# 使用其他 OpenAI 兼容模型运行，支持不同的 role 使用不同的模型
 python examples/run_openai_compatiable_model.py
+# 带问题的示例
+python examples/run_openai_compatiable_model.py "浏览京东并找出一款对程序员有吸引力的产品。请提供产品名称和价格。"
 
 # 使用 Azure OpenAI模型运行
 python examples/run_azure_openai.py

@@ -857,7 +857,7 @@ def create_ui():
                 logs2,
             )
 
-    with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue")) as app:
+    with gr.Blocks(title="Owl",theme=gr.themes.Soft(primary_hue="blue")) as app:
         gr.Markdown(
             """
                 # 🦉 OWL Multi-Agent Collaboration System
@@ -1294,7 +1294,7 @@ def main():
         app = create_ui()
 
         app.queue()
-        app.launch(share=False)
+        app.launch(share=False,favicon_path="../assets/owl-favicon.ico")
     except Exception as e:
         logging.error(f"Error occurred while starting the application: {str(e)}")
         print(f"Error occurred while starting the application: {str(e)}")

@@ -63,22 +63,24 @@ def create_role_playing_model(
     if default_role_name not in ["LLM", "VLLM"]:
         raise ValueError(f"Invalid default role name: {default_role_name}")
 
-    # Get model type from environment variable
+    # Get model type from environment variable or Change the default value of model type from "qwen-max"/"qwen-vl-max" to yours
     default_role_type = "qwen-max" if default_role_name == "LLM" else "qwen-vl-max"
     model_type=os.getenv(f"{role_name}_ROLE_API_MODEL_TYPE", os.getenv(f"{default_role_name}_ROLE_API_MODEL_TYPE", default_role_type))
-    # Get API key from environment variable
+
+    # Get API key from environment variable or Change the default value of api key from "os.getenv("QWEN_API_KEY")" to yours
     api_key=os.getenv(f"{role_name}_ROLE_API_KEY", os.getenv(f"{default_role_name}_ROLE_API_KEY", os.getenv("QWEN_API_KEY")))
-    # Get URL from environment variable
+    
+    # Get URL from environment variable or Change the default value of url from "https://dashscope.aliyuncs.com/compatible-mode/v1" to yours
     url=os.getenv(f"{role_name}_ROLE_API_BASE_URL", os.getenv(f"{default_role_name}_ROLE_API_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"))
 
-    # Get temperature from environment variable
+    # Get temperature from environment variable or Change the default value of temperature from 0.4 to yours
     temperature_str = os.getenv(f"{role_name}_ROLE_API_MODEL_TEMPERATURE", os.getenv(f"{default_role_name}_ROLE_API_MODEL_TEMPERATURE"))
     try:
         temperature = float(temperature_str) if temperature_str else 0.4
     except ValueError:
         raise ValueError(f"Invalid temperature: {temperature_str}")
     
-    # Get max_tokens from environment variable
+    # Get max_tokens from environment variable or Change the default value of max_tokens from 4096 to yours
     max_tokens_str = os.getenv(f"{role_name}_ROLE_API_MODEL_MAX_TOKENS", os.getenv(f"{default_role_name}_ROLE_API_MODEL_MAX_TOKENS"))
     try:
         max_tokens = int(max_tokens_str) if max_tokens_str else 4096

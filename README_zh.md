@@ -410,6 +410,29 @@ OWL 将自动调用与文档相关的工具来处理文件并提取答案。
 ## 模型上下文协议（MCP）
 
 OWL 的 MCP 集成为 AI 模型与各种工具和数据源的交互提供了标准化的方式。
+在使用MCP前，需要先安装Node.js。
+### **安装 Node.js**
+### Windows
+
+下载官方安装包：[Node.js](https://nodejs.org/zh-cn)。
+
+安装时，勾选 "Add to PATH" 选项。
+
+### Linux
+```bash
+sudo apt update
+sudo apt install nodejs npm -y
+```
+### Mac
+```bash
+brew install node
+```
+
+### **安装 MCP 服务**
+```bash
+npm install -g @executeautomation/playwright-mcp-server
+npx playwright install-deps
+```
 
 查看我们的综合示例 `examples/run_mcp.py` 来体验这些功能！
 
@@ -559,8 +582,7 @@ python examples/run_gaia_roleplaying.py
 3. 提交包含您改进的拉取请求
 
 **当前开放贡献的问题：**
-- [#1876](https://github.com/camel-ai/camel/issues/1876)
-- [#1877](https://github.com/camel-ai/camel/issues/1877)
+- [#1905](https://github.com/camel-ai/camel/issues/1905)
 - [#1712](https://github.com/camel-ai/camel/issues/1712)
 
 要认领一个问题，只需在该问题下留言表明您的兴趣即可。

@@ -16,7 +16,6 @@ import sys
 
 from dotenv import load_dotenv
 from camel.models import ModelFactory
-from camel.models.base_model import BaseModelBackend
 from camel.toolkits import (
     CodeExecutionToolkit,
     ExcelToolkit,

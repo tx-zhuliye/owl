@@ -26,7 +26,7 @@ from owl.utils import run_society
 
 from camel.societies import RolePlaying
 
-import pathlib
+import pathlib, sys
 
 base_dir = pathlib.Path(__file__).parent.parent
 env_path = base_dir / "owl" / ".env"
@@ -107,7 +107,12 @@ def construct_society(question: str) -> RolePlaying:
 def main():
     r"""Main function to run the OWL system with an example question."""
     # Example research question
-    question = "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."
+    if len(sys.argv) > 1:
+        question = str(sys.argv[1])
+        
+    else:
+        # Example research question
+        question = "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."
 
     # Construct and run the society
     society = construct_society(question)

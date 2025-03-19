@@ -33,7 +33,7 @@ from camel.logger import set_log_level
 
 from owl.utils import run_society
 
-import pathlib
+import pathlib, sys
 
 set_log_level(level="DEBUG")
 
@@ -102,7 +102,12 @@ def construct_society(question: str) -> RolePlaying:
 def main():
     r"""Main function to run the OWL system with an example question."""
     # Example research question
-    question = "搜索OWL项目最近的新闻并生成一篇报告，最后保存到本地。"
+    if len(sys.argv) > 1:
+        question = str(sys.argv[1])
+        
+    else:
+        # Example research question
+        question = "搜索OWL项目最近的新闻并生成一篇报告，最后保存到本地。"
 
     # Construct and run the society
     society = construct_society(question)

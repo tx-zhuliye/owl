@@ -43,6 +43,8 @@ from camel.logger import set_log_level
 
 from owl.utils import OwlRolePlaying, run_society, DocumentProcessingToolkit
 
+import sys
+
 load_dotenv()
 
 set_log_level(level="DEBUG")
@@ -141,7 +143,12 @@ def construct_society(question: str) -> OwlRolePlaying:
 def main():
     r"""Main function to run the OWL system with an example question."""
     # Example research question
-    question = "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."
+    if len(sys.argv) > 1:
+        question = str(sys.argv[1])
+        
+    else:
+        # Example research question
+        question = "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."
 
     # Construct and run the society
     # Note: This configuration uses GROQ_LLAMA_3_3_70B for tool-intensive roles (assistant, web, planning, video, image)

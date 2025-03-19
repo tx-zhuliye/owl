@@ -26,7 +26,7 @@ from camel.logger import set_log_level
 from owl.utils import run_society
 from camel.societies import RolePlaying
 
-import pathlib
+import pathlib, sys
 
 base_dir = pathlib.Path(__file__).parent.parent
 env_path = base_dir / "owl" / ".env"
@@ -108,7 +108,12 @@ def construct_society(question: str) -> RolePlaying:
 def main():
     r"""Main function to run the OWL system with an example question."""
     # Example research question
-    question = f"""Open Google Search, summarize the number of GitHub stars, forks, etc., of the camel framework of camel-ai, 
+    if len(sys.argv) > 1:
+        question = str(sys.argv[1])
+        
+    else:
+        # Example research question
+        question = f"""Open Google Search, summarize the number of GitHub stars, forks, etc., of the camel framework of camel-ai, 
     and write the numbers into a Python file using the plot package, 
     save it to "+{os.path.join(base_dir, 'final_output')}+", 
     and execute the Python file with the local terminal to display the graph for me."""

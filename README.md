@@ -126,6 +126,8 @@ https://github.com/user-attachments/assets/2a2a825d-39ea-45c5-9ba1-f9d58efbc372
 
 https://private-user-images.githubusercontent.com/55657767/420212194-e813fc05-136a-485f-8df3-f10d9b4e63ec.mp4
 
+https://github.com/camel-ai/owl/blob/43984bfc968d62e7174b0c1e6283fefe08c44b45/OWL之Excel文件处理.mp4
+
 # ✨️ Core Features
 
 - **Online Search**: Support for multiple search engines (including Wikipedia, Google, DuckDuckGo, Baidu, Bocha, etc.) for real-time information retrieval and knowledge acquisition.

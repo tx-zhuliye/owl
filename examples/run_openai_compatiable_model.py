@@ -64,25 +64,26 @@ def create_role_playing_model(
         raise ValueError(f"Invalid default role name: {default_role_name}")
 
     # Get model type from environment variable
-    model_type=os.getenv(f"{role_name}_ROLE_API_MODEL_TYPE", os.getenv(f"{default_role_name}_ROLE_API_MODEL_TYPE"))
+    default_role_type = "qwen-max" if default_role_name == "LLM" else "qwen-vl-max"
+    model_type=os.getenv(f"{role_name}_ROLE_API_MODEL_TYPE", os.getenv(f"{default_role_name}_ROLE_API_MODEL_TYPE", default_role_type))
     # Get API key from environment variable
-    api_key=os.getenv(f"{role_name}_ROLE_API_KEY", os.getenv(f"{default_role_name}_ROLE_API_KEY"))
+    api_key=os.getenv(f"{role_name}_ROLE_API_KEY", os.getenv(f"{default_role_name}_ROLE_API_KEY", os.getenv("QWEN_API_KEY")))
     # Get URL from environment variable
-    url=os.getenv(f"{role_name}_ROLE_API_BASE_URL", os.getenv(f"{default_role_name}_ROLE_API_BASE_URL"))
+    url=os.getenv(f"{role_name}_ROLE_API_BASE_URL", os.getenv(f"{default_role_name}_ROLE_API_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"))
 
+    # Get temperature from environment variable
+    temperature_str = os.getenv(f"{role_name}_ROLE_API_MODEL_TEMPERATURE", os.getenv(f"{default_role_name}_ROLE_API_MODEL_TEMPERATURE"))
     try:
-        # Get temperature from environment variable
-        temperature_str = os.getenv(f"{role_name}_ROLE_API_MODEL_TEMPERATURE", os.getenv(f"{default_role_name}_ROLE_API_MODEL_TEMPERATURE"))
-        temperature = float(temperature_str) if temperature_str else 0.0
+        temperature = float(temperature_str) if temperature_str else 0.4
     except ValueError:
-        temperature = 0.0
+        raise ValueError(f"Invalid temperature: {temperature_str}")
     
+    # Get max_tokens from environment variable
+    max_tokens_str = os.getenv(f"{role_name}_ROLE_API_MODEL_MAX_TOKENS", os.getenv(f"{default_role_name}_ROLE_API_MODEL_MAX_TOKENS"))
     try:
-        # Get max_tokens from environment variable
-        max_tokens_str = os.getenv(f"{role_name}_ROLE_API_MODEL_MAX_TOKENS", os.getenv(f"{default_role_name}_ROLE_API_MODEL_MAX_TOKENS"))
-        max_tokens = int(max_tokens_str) if max_tokens_str else 0
+        max_tokens = int(max_tokens_str) if max_tokens_str else 4096
     except ValueError:
-        max_tokens = 0
+        raise ValueError(f"Invalid max_tokens: {max_tokens_str}")
 
     # Check if max_tokens is valid
     if max_tokens < 1:

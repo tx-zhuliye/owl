@@ -364,7 +364,7 @@ python examples/run_qwen_zh.py
 python examples/run_deepseek_zh.py
 
 # 使用其他 OpenAI 兼容模型运行
-python examples/run_openai_compatiable_model.py
+python examples/run_openai_compatible_model.py
 
 # 使用 Azure OpenAI模型运行
 python examples/run_azure_openai.py

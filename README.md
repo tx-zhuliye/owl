@@ -365,7 +365,7 @@ python examples/run_qwen_zh.py
 python examples/run_deepseek_zh.py
 
 # Run with other OpenAI-compatible models
-python examples/run_openai_compatiable_model.py
+python examples/run_openai_compatible_model.py
 
 # Run with Azure OpenAI
 python examples/run_azure_openai.py

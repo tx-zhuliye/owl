@@ -12,6 +12,7 @@
 # limitations under the License.
 # ========= Copyright 2023-2024 @ CAMEL-AI.org. All Rights Reserved. =========
 import os
+import sys
 
 from dotenv import load_dotenv
 from camel.models import ModelFactory
@@ -52,38 +53,53 @@ def construct_society(question: str) -> RolePlaying:
     models = {
         "user": ModelFactory.create(
             model_platform=ModelPlatformType.OPENAI_COMPATIBLE_MODEL,
-            model_type="qwen-max",
-            api_key=os.getenv("QWEN_API_KEY"),
-            url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-            model_config_dict={"temperature": 0.4, "max_tokens": 4096},
+            model_type=os.getenv("USER_ROLE_API_MODEL_TYPE", os.getenv("LLM_ROLE_API_MODEL_TYPE", "qwen-max")),
+            api_key=os.getenv("USER_ROLE_API_KEY", os.getenv("LLM_ROLE_API_KEY", os.getenv("QWEN_API_KEY", "Your_Key"))),
+            url=os.getenv("USER_ROLE_API_BASE_URL", os.getenv("LLM_ROLE_API_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")),
+            model_config_dict={
+                "temperature": float(os.getenv("USER_ROLE_API_MODEL_TEMPERATURE", os.getenv("LLM_ROLE_API_MODEL_TEMPERATURE", "0.4"))), 
+                "max_tokens": int(os.getenv("USER_ROLE_API_MODEL_MAX_TOKENS", os.getenv("LLM_ROLE_API_MODEL_MAX_TOKENS", "4096")))
+            },
         ),
         "assistant": ModelFactory.create(
             model_platform=ModelPlatformType.OPENAI_COMPATIBLE_MODEL,
-            model_type="qwen-max",
-            api_key=os.getenv("QWEN_API_KEY"),
-            url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-            model_config_dict={"temperature": 0.4, "max_tokens": 4096},
+            model_type=os.getenv("ASSISTANT_ROLE_API_MODEL_TYPE", os.getenv("LLM_ROLE_API_MODEL_TYPE", "qwen-max")),
+            api_key=os.getenv("ASSISTANT_ROLE_API_KEY", os.getenv("LLM_ROLE_API_KEY", os.getenv("QWEN_API_KEY", "Your_Key"))),
+            url=os.getenv("ASSISTANT_ROLE_API_BASE_URL", os.getenv("LLM_ROLE_API_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")),
+            model_config_dict={
+                "temperature": float(os.getenv("ASSISTANT_ROLE_API_MODEL_TEMPERATURE", os.getenv("LLM_ROLE_API_MODEL_TEMPERATURE", "0.4"))), 
+                "max_tokens": int(os.getenv("ASSISTANT_ROLE_API_MODEL_MAX_TOKENS", os.getenv("LLM_ROLE_API_MODEL_MAX_TOKENS", "4096")))
+            },
         ),
         "web": ModelFactory.create(
             model_platform=ModelPlatformType.OPENAI_COMPATIBLE_MODEL,
-            model_type="qwen-vl-max",
-            api_key=os.getenv("QWEN_API_KEY"),
-            url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-            model_config_dict={"temperature": 0.4, "max_tokens": 4096},
+            model_type=os.getenv("WEB_ROLE_API_BASE_URL", os.getenv("VLLM_ROLE_API_MODEL_TYPE", "qwen-vl-max")),
+            api_key=os.getenv("WEB_ROLE_API_KEY", os.getenv("VLLM_ROLE_API_KEY", os.getenv("QWEN_API_KEY", "Your_Key"))),
+            url=os.getenv("USER_ROLE_API_BASE_URL", os.getenv("VLLM_ROLE_API_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")),
+            model_config_dict={
+                "temperature": float(os.getenv("WEB_ROLE_API_MODEL_TEMPERATURE", os.getenv("VLLM_ROLE_API_MODEL_TEMPERATURE", "0.4"))), 
+                "max_tokens": int(os.getenv("WEB_ROLE_API_MODEL_MAX_TOKENS", os.getenv("VLLM_ROLE_API_MODEL_MAX_TOKENS", "4096")))
+            },
         ),
         "planning": ModelFactory.create(
             model_platform=ModelPlatformType.OPENAI_COMPATIBLE_MODEL,
-            model_type="qwen-max",
-            api_key=os.getenv("QWEN_API_KEY"),
-            url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-            model_config_dict={"temperature": 0.4, "max_tokens": 4096},
+            model_type=os.getenv("PLANNING_ROLE_API_MODEL_TYPE", os.getenv("LLM_ROLE_API_MODEL_TYPE", "qwen-max")),
+            api_key=os.getenv("PLANNING_ROLE_API_KEY", os.getenv("LLM_ROLE_API_KEY", os.getenv("QWEN_API_KEY", "Your_Key"))),
+            url=os.getenv("PLANNING_ROLE_API_BASE_URL", os.getenv("LLM_ROLE_API_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")),
+            model_config_dict={
+                "temperature": float(os.getenv("PLANNING_ROLE_API_MODEL_TEMPERATURE", os.getenv("LLM_ROLE_API_MODEL_TEMPERATURE", "0.4"))), 
+                "max_tokens": int(os.getenv("PLANNING_ROLE_API_MODEL_MAX_TOKENS", os.getenv("LLM_ROLE_API_MODEL_MAX_TOKENS", "4096")))
+            },
         ),
         "image": ModelFactory.create(
             model_platform=ModelPlatformType.OPENAI_COMPATIBLE_MODEL,
-            model_type="qwen-vl-max",
-            api_key=os.getenv("QWEN_API_KEY"),
-            url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-            model_config_dict={"temperature": 0.4, "max_tokens": 4096},
+            model_type=os.getenv("IMAGE_ROLE_API_MODEL_TYPE", os.getenv("VLLM_ROLE_API_MODEL_TYPE", "qwen-vl-max")),
+            api_key=os.getenv("IMAGE_ROLE_API_KEY", os.getenv("VLLM_ROLE_API_KEY", os.getenv("QWEN_API_KEY", "Your_Key"))),
+            url=os.getenv("IMAGE_ROLE_API_BASE_URL", os.getenv("VLLM_ROLE_API_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")),
+            model_config_dict={
+                "temperature": float(os.getenv("IMAGE_ROLE_API_MODEL_TEMPERATURE", os.getenv("VLLM_ROLE_API_MODEL_TEMPERATURE", "0.4"))), 
+                "max_tokens": int(os.getenv("IMAGE_ROLE_API_MODEL_MAX_TOKENS", os.getenv("VLLM_ROLE_API_MODEL_MAX_TOKENS", "4096")))
+            },
         ),
     }
 
@@ -125,18 +141,24 @@ def construct_society(question: str) -> RolePlaying:
     return society
 
 
-def main():
-    r"""Main function to run the OWL system with an example question."""
-    # Example research question
-    question = "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."
-
+def main(question: str = "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."):
+    r"""Main function to run the OWL system with an example question.
+    Args:
+        question (str): The task or question to be addressed by the society.
+            If not provided, a default question will be used.
+            Defaults to "Navigate to Amazon.com and identify one product that is attractive to coders. Please provide me with the product name and price. No need to verify your answer."
+    Returns:
+        None
+    """
     # Construct and run the society
     society = construct_society(question)
     answer, chat_history, token_count = run_society(society)
 
     # Output the result
     print(f"\033[94mAnswer: {answer}\033[0m")
+    # Output the token count
+    print(f"\033[94mToken count: {token_count}\033[0m")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1] if len(sys.argv) > 1 else "")

@@ -276,6 +276,7 @@ QWEN_API_KEY='Your_Key'
 
 # DeepSeek API (https://platform.deepseek.com/api_keys)
 DEEPSEEK_API_KEY='Your_Key'
+DEEPSEEK_API_BASE_URL=‘http://localhost:6399/v1’
 
 #===========================================
 # Tools & Services API
